@@ -3,12 +3,18 @@
 
 #initializing variables and functions; the "data" section
 
-#Repo User Name
-name=$1
-#Repo Name
-repo=$2
-#Personal access token
-token=$3
+#print script usage
+print_usage() {
+
+	cat << EOF
+	
+	Usage: git_connect [-h|--help] <name> <repo name> <personal access token>
+	Output:
+		No output. Connects local repo file directory to git repo
+
+EOF
+
+}
 
 #function that performs a initial git commit
 make_commit() {
@@ -26,21 +32,68 @@ make_commit() {
 
 
 #Executing the script, this is where all the magic happens; the "main", "text" section
+main() {
+	
+	#Repo User Name
+	local name=
+	#Repo Name
+	local repo=
+	#Personal access token
+	local token=
+	#which position is being checked
+	local position=0
 
-#Output onto the terminal
-echo "Initializing git repository"
+	#check all flags and positional arguments
+	while [[ "${#}" -gt 0 ]]; do
+		case "${1}" in
+			-h|--help)
+				print_usage
+				exit 0
+				;;
 
-#Script has to be executed in the directory, where the git projects are stored
-#Check if folder for repo already exists
-if [ -d $repo ] 
-then
-	cd $repo
-else
-	mkdir $repo
-	cd $repo
-fi
+			*)
+			#if no flag is found, proceed to positional arguments
+			case "${position}" in
+				0)
+					name=${1}
+					position=1
+					shift
+					;;
+				1)
+					repo=${1}
+					position=2
+					shift
+					;;
+				2)
+					token=${1}
+					position=3
+					shift
+					;;
+				3)
+					echo "Unknown argument"
+					print_usage
+					exit 1
+					;;
+			esac
+			;;
+		esac
+	done
 
-#Initial commit 
-make_commit
+	#Script has to be executed in the directory, where the git projects are stored
+	#Check if folder for repo already exists
+	if [ -d $repo ] 
+	then
+		cd $repo
+	else
+		mkdir $repo
+		cd $repo
+	fi
 
+	#Initial commit 
+	make_commit
 
+	return 0
+}
+
+#main execution
+main "${@:-}"
