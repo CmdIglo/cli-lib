@@ -1,6 +1,7 @@
 #!/bin/bash
 
-#initializing variables and functions
+
+#initializing variables and functions; the "data" section
 
 #Repo User Name
 name=$1
@@ -23,6 +24,10 @@ make_commit() {
 
 }
 
+
+#Executing the script, this is where all the magic happens; the "main", "text" section
+
+#Output onto the terminal
 echo "Initializing git repository"
 
 #Script has to be executed in the directory, where the git projects are stored
