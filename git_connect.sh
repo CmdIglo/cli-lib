@@ -11,8 +11,14 @@ token=$3
 echo "Initializing git repository"
 
 #Script has to be executed in the directory, where the git projects are stored
-mkdir $repo
-cd $repo
+#Check if folder for repo already exists
+if [ -d $repo ] 
+then
+	cd $repo
+else
+	mkdir $repo
+	cd $repo
+fi
 
 #Initial commit 
 echo "# $repo" 1> README.md
