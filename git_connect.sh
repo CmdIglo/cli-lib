@@ -9,9 +9,10 @@ repo=$2
 token=$3
 
 echo "Initializing git repository"
+echo "# $name" 1> README.md
 git init
 git add README.md
 git commit -m "Automated first commit"
 git branch -M main
-git remote add origin repo
+git remote add origin $repo
 git push -u origin main
