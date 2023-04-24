@@ -4,8 +4,6 @@
 mode=$1
 #projects dir
 directory=$2
-#-l flag for project listing; lists git projects available on the machine
-list_flag=''
 
 #prints usage of script
 print_usage() {
@@ -19,10 +17,13 @@ nostd_exit() {
 }
 
 #check if a flag is set
-while getopts "l" option; do
+while getopts "lh" option; do
 	case "${option}" in
 		l)
 			ls $directory | echo
+			;;
+		h)
+			print_usage
 			;;
 		*)
 			nostd_exit
@@ -31,7 +32,7 @@ while getopts "l" option; do
 done
 
 #check if the project exists locally
-if [ -d $directory$mode] 
+if [ -d $directory$mode ] 
 then
 	cd $directory$mode
 else
