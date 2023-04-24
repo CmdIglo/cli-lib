@@ -1,18 +1,19 @@
 #!/bin/bash
 
 #initializing variables
-#Repo Name
+#Repo User Name
 name=$1
-#Repo URL
+#Repo Name
 repo=$2
 #Personal access token
 token=$3
 
 echo "Initializing git repository"
-echo "# $name" 1> README.md
+echo "# $repo" 1> README.md
 git init
 git add README.md
 git commit -m "Automated first commit"
 git branch -M main
-git remote add origin $repo
+git remote add origin https://$token@github.com/$name/$repo
 git push -u origin main
+
