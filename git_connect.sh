@@ -9,6 +9,12 @@ repo=$2
 token=$3
 
 echo "Initializing git repository"
+
+#Script has to be executed in the directory, where the git projects are stored
+mkdir $repo
+cd $repo
+
+#Initial commit 
 echo "# $repo" 1> README.md
 git init
 git add README.md
