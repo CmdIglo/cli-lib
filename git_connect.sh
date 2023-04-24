@@ -1,12 +1,27 @@
 #!/bin/bash
 
-#initializing variables
+#initializing variables and functions
+
 #Repo User Name
 name=$1
 #Repo Name
 repo=$2
 #Personal access token
 token=$3
+
+#function that performs a initial git commit
+make_commit() {
+
+	#write to readme file
+	echo "# $repo" 1> README.md
+	git init
+	git add README.md
+	git commit -m "Automated first commit"
+	git branch -M main
+	git remote add origin https://$token@github.com/$name/$repo
+	git push -u origin main
+
+}
 
 echo "Initializing git repository"
 
@@ -21,11 +36,6 @@ else
 fi
 
 #Initial commit 
-echo "# $repo" 1> README.md
-git init
-git add README.md
-git commit -m "Automated first commit"
-git branch -M main
-git remote add origin https://$token@github.com/$name/$repo
-git push -u origin main
+make_commit
+
 
