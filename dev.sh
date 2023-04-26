@@ -1,10 +1,5 @@
 #!/bin/bash
 
-#which project 
-mode=$1
-#projects dir
-directory=$2
-
 #prints usage of script
 print_usage() {
 	echo "Usage: dev [-l] <Projectname>" 1>&2
@@ -16,26 +11,48 @@ nostd_exit() {
 	exit 1
 }
 
-#check if a flag is set
-while getopts "lh" option; do
-	case "${option}" in
-		l)
-			ls $directory | echo
-			;;
-		h)
-			print_usage
-			;;
-		*)
-			nostd_exit
-			;;
-	esac
-done
+main() {
 
-#check if the project exists locally
-if [ -d $directory$mode ] 
-then
-	cd $directory$mode
-else
-	echo "Project does not exist locally"
-	nostd_exit
-fi
+	local mode=
+	local dir=
+	local position=0
+	
+	while [[ "${#}" -gt 0 ]]; do
+		case "${1}" in
+			-h|--help)
+				print_usage
+				exit 0
+				;;
+			*)
+				case "${position}" in
+					0)
+						mode=${1}
+						position=1
+						shift
+						;;
+					1)
+						dir=${1}
+						position=2
+						shift
+						;;
+					2)
+						nostd_exit
+						;;
+				esac
+				;;
+		esac
+	done
+
+	#check if the project exists locally
+	if [ -d $dir$mode ] 
+	then
+		cd $directory$mode
+	else
+		echo "Project does not exist locally"
+		nostd_exit
+	fi
+
+	return 0
+}
+
+main "${@:-}"
