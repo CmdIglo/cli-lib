@@ -5,7 +5,7 @@ print_usage() {
 	
 	cat << EOF
 
-	Usage: dev [-l] [-h|--help] <Project name>
+	Usage: dev [-l <LinkToProject>] [-h|--help] <ProjectName>
 	Output:
 		No output. Changes directory from current to project directory
 
@@ -20,18 +20,25 @@ nostd_exit() {
 
 main() {
 
+	#which project
 	local mode=
+	#directory; only temporary, for test reasons
 	local dir=
+	#in the stable build of this script, this variable is used to set the link of the projects directory
+	local link=
 	local position=0
 	
+	#iterate over the flags and positional arguments given
 	while [[ "${#}" -gt 0 ]]; do
 		case "${1}" in
 			-h|--help)
 				print_usage
 				exit 0
 				;;
-			-l)
-				echo "Set link for projects directory"
+			-l|--link)
+				link="${2}"
+				[[-z "${link}"]] && echo "No link proided" >&2 && print_usage >&2 && exit 1
+				echo "Setting link for project directory"
 				exit 0
 				;;
 			*)
