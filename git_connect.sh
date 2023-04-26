@@ -1,5 +1,15 @@
 #!/bin/bash
 
+#@author: Maxwell Leu
+#This script automates the connection process, between a local project
+#directory and the corresponding git repo.
+#This script has to be executed in the top level folder of the project directory.
+#The Folder structure has to look like this:
+#   "Projects"-dir
+#	- Project 1 folder
+#       - Project 2 folder
+#	...
+#Script has to be executed in the "Projects" directory
 
 #initializing variables and functions; the "data" section
 
