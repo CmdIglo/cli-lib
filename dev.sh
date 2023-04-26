@@ -2,7 +2,14 @@
 
 #prints usage of script
 print_usage() {
-	echo "Usage: dev [-l] <Projectname>" 1>&2
+	
+	cat << EOF
+
+	Usage: dev [-l] [-h|--help] <Project name>
+	Output:
+		No output. Changes directory from current to project directory
+
+EOF
 }
 
 #is being executed, when the script runs into errors
@@ -21,6 +28,10 @@ main() {
 		case "${1}" in
 			-h|--help)
 				print_usage
+				exit 0
+				;;
+			-l)
+				echo "Set link for projects directory"
 				exit 0
 				;;
 			*)
@@ -43,10 +54,13 @@ main() {
 		esac
 	done
 
+	echo $dir$mode
+
 	#check if the project exists locally
 	if [ -d $dir$mode ] 
 	then
-		cd $directory$mode
+		cd $dir$mode
+		echo "Project exists"
 	else
 		echo "Project does not exist locally"
 		nostd_exit
