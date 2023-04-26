@@ -37,7 +37,7 @@ main() {
 				;;
 			-l|--link)
 				link="${2}"
-				[[-z "${link}"]] && echo "No link proided" >&2 && print_usage >&2 && exit 1
+				[[ -z "${link}" ]] && echo "No link proided" >&2 && print_usage >&2 && exit 1
 				echo "Setting link for project directory"
 				exit 0
 				;;
