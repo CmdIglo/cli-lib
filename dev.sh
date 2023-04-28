@@ -39,6 +39,7 @@ main() {
 				link="${2}"
 				[[ -z "${link}" ]] && echo "No link proided" >&2 && print_usage >&2 && exit 1
 				echo "Setting link for project directory"
+				echo "${link}" 1> /home/$USER/.config/project_dir_script
 				exit 0
 				;;
 			*)
