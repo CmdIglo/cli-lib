@@ -18,12 +18,18 @@ nostd_exit() {
 	exit 1
 }
 
+#is being called, when no config file is stored in .local
+wrong_path() {
+	echo "No directory set!"
+	nostd_exit
+}
+
 main() {
+
+	local project_link=/home/$USER/.local/project_dir_script
 
 	#which project
 	local mode=
-	#directory; only temporary, for test reasons
-	local dir=
 	#in the stable build of this script, this variable is used to set the link of the projects directory
 	local link=
 	local position=0
@@ -39,7 +45,7 @@ main() {
 				link="${2}"
 				[[ -z "${link}" ]] && echo "No link proided" >&2 && print_usage >&2 && exit 1
 				echo "Setting link for project directory"
-				echo "${link}" 1> /home/$USER/.config/project_dir_script
+				echo "${link}" 1> $project_link
 				exit 0
 				;;
 			*)
@@ -50,11 +56,6 @@ main() {
 						shift
 						;;
 					1)
-						dir=${1}
-						position=2
-						shift
-						;;
-					2)
 						nostd_exit
 						;;
 				esac
@@ -62,13 +63,12 @@ main() {
 		esac
 	done
 
-	echo $dir$mode
+	[[ -f $project_link ]] && local link_to_project=`cat < $project_link` || wrong_path 
 
 	#check if the project exists locally
-	if [ -d $dir$mode ] 
+	if [ -d $link_to_project ] 
 	then
-		cd $dir$mode
-		echo "Project exists"
+		cd $link_to_project$mode
 	else
 		echo "Project does not exist locally"
 		nostd_exit
