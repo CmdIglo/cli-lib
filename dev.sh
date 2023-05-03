@@ -49,7 +49,7 @@ main() {
 				exit 0
 				;;
 			-r|--ret)
-				cat < $project_link | echo
+				cat < $project_link
 				exit 0
 				;;
 			*)
