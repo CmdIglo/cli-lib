@@ -48,6 +48,10 @@ main() {
 				echo "${link}" 1> $project_link
 				exit 0
 				;;
+			-r|--ret)
+				cat < $project_link | echo
+				exit 0
+				;;
 			*)
 				case "${position}" in
 					0)
