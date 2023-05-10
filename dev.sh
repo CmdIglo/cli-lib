@@ -73,6 +73,7 @@ main() {
 	if [ -d $link_to_project ] 
 	then
 		cd $link_to_project$mode
+		echo $PWD #print the working directory
 	else
 		echo "Project does not exist locally"
 		nostd_exit
