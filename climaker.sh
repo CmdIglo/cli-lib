@@ -8,3 +8,6 @@ filename=$1
 
 cp $filename "$filename"
 
+echo $PATH 
+
+ls
