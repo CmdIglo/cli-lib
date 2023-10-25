@@ -12,11 +12,71 @@ class RouteFLP():
         self.sid = sid
         self.star = star
 
+    def getWaypoints(self):
+        return self.waypoints
+
+    def setWaypoints(self, wps):
+        self.waypoints = wps
+
+    def getStart(self):
+        return self.start
+
+    def setStart(self, start):
+        self.start = start
+
+    def getEnd(self):
+        return self.end
+
+    def setEnd(self, end):
+        self.end = end
+
+    def getRwyDep(self):
+        return self.rwydep
+
+    def setRwyDep(self, rwy):
+        self.rwydep = rwy
+
+    def getRwyArr(self):
+        return self.rwyarr
+
+    def setRwyArr(self, rwy):
+        self.rwyarr = rwy
+
+    def getSid(self):
+        return self.sid
+
+    def setSid(self, sid):
+        self.sid = sid
+
+    def getStar(self):
+        return self.star
+
+    def setStar(self, star):
+        self.star = star
+
 #represents a .rte flight plan
 class RouteRTE():
     def __init__(self, waypoints, start, end):
         self.waypoints = waypoints
         self.start = start
+        self.end = end
+
+    def getWaypoints(self):
+        return self.waypoints
+
+    def setWaypoints(self, wps):
+        self.waypoints = wps
+
+    def getStart(self):
+        return self.start
+
+    def setStart(self, start):
+        self.start = start
+
+    def getEnd(self):
+        return self.end
+
+    def setEnd(self, end):
         self.end = end
 
 #represents waypoint in .rte route
@@ -51,11 +111,28 @@ class RoutepointFLP():
         return "DIRECT"     # make enum
 
 #read the .flp flight plan
-def readAerosoft():
-    pass
+def readAerosoft(flp):
+    aerosoft_flp = RouteFLP([], "", "", "", "", "", "")
+    rte = []
+    for line in flp:
+        if line.startswith("ArptDep="):
+            aerosoft_flp.setStart(line.split("=")[1])
+        elif line.startswith("ArptArr="):
+            aerosoft_flp.setEnd(line.split("=")[1])
+        elif line.startswith("DctWpt"):
+            rte.append(line.split("=")[1])
+
+    final_rte = []
+    i = 0
+    while i < len(rte):
+        waypoint = RoutepointFLP(rte[i], rte[i+1])
+        final_rte.append(waypoint)
+        i += 2
+
+    print(final_rte)
 
 #read the .rte flight plan
-def readPmdg():
+def readPmdg(rte):
     pass
 
 #convert from rte to flp
@@ -66,26 +143,21 @@ def convertRF(rte, flp):
 def convertFR(flp, rte):
     pass
 
-#get route type
-def getRouteType():
-    return input("What Route type? 1. PMDG 2. Aerosoft: ")
-
 #get flight plan
 def getInput():
-    rte_type = getRouteType()
     file_name = input("File Name: ")
-    if((file_name.endswith(".rte") and rte_type == 1) or (file_name.endswith(".flp") and rte_type == 2)):
-        route = open(file_name, "r")
-        return route
-    else:
-        sys.exit("Wrong file type")
+    route = open(file_name, "r")
+    return (file_name, route)
 
 #main function
 def main():
-    rte = RouteRTE("waypoints", "EDDH", "LSZH")
-    flp = RouteFLP("waypoints", "EDDH", "LSZH", 1, 2, "SID", "STAR")
-    print(getInput().read())
-    pass
+    filename, rte = getInput()
+    if filename.endswith(".rte"):
+        readPmdg(rte)
+    elif filename.endswith(".flp"):
+        readAerosoft(rte)
+    else:
+        sys.exit("Invalid File")
 
 #main function call
 if __name__ == "__main__":
