@@ -1,4 +1,6 @@
 
+import sys
+
 #represents a .flp flight plan
 class RouteFLP():
     def __init__(self, waypoints, start, end, rwydep, rwyarr, sid, star):
@@ -64,11 +66,25 @@ def convertRF(rte, flp):
 def convertFR(flp, rte):
     pass
 
+#get route type
+def getRouteType():
+    return input("What Route type? 1. PMDG 2. Aerosoft: ")
+
+#get flight plan
+def getInput():
+    rte_type = getRouteType()
+    file_name = input("File Name: ")
+    if((file_name.endswith(".rte") and rte_type == 1) or (file_name.endswith(".flp") and rte_type == 2)):
+        route = open(file_name, "r")
+        return route
+    else:
+        sys.exit("Wrong file type")
+
 #main function
 def main():
     rte = RouteRTE("waypoints", "EDDH", "LSZH")
     flp = RouteFLP("waypoints", "EDDH", "LSZH", 1, 2, "SID", "STAR")
-    print("Jup, works")
+    print(getInput().read())
     pass
 
 #main function call
