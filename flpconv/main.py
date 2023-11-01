@@ -129,11 +129,16 @@ def readAerosoft(flp):
         final_rte.append(waypoint)
         i += 2
 
-    print(final_rte)
+    aerosoft_flp.setWaypoints(final_rte)
+
+    return aerosoft_flp
 
 #read the .rte flight plan
 def readPmdg(rte):
-    pass
+    pmdg_rte = RouteRTE([], "", "")
+    rte = []
+    for line in rte:
+        pass
 
 #convert from rte to flp
 def convertRF(rte, flp):
