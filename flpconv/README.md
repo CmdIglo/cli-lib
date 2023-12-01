@@ -2,12 +2,10 @@
 
 ## Functionality
 
------------------------------------------------------------------ 
- Converter for .flp (aerosoft) and .rte (pmdg) Flightplan files. 
+ Converter for .flp (aerosoft) and .rte (pmdg) Flightplan files. <br/> 
  Converts from .flp <-> .rte
------------------------------------------------------------------
 
- Usage: $0 [-h] [-f inputFile outputFile] [-o inputFile]
+ <code>Usage: conv.sh [-h] [-f inputFile outputFile] [-o inputFile]</code>
 
      -h, --help         Display this help message
      -f                 Specify input file name and print Route to provided file
