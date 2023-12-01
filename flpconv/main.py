@@ -11,6 +11,9 @@ from itertools import chain
 def plotRoute(rte):
     lats = []
     longs = []
+    names = []
+    for wpt_ in rte.getWaypoints():
+        names.append(wpt_.getName())
     #check if rte or flp
     if "," in rte.getWaypoints()[0].getCoords():
         for wpt in rte.getWaypoints():
@@ -31,12 +34,33 @@ def plotRoute(rte):
 
     plt.figure(figsize=(8, 8))
     
-    m = Basemap(projection='cyl',  resolution=None,
-            llcrnrlat=-90, urcrnrlat=90,
-            llcrnrlon=-180, urcrnrlon=180,)    
+    center_lon = 180 % (((180 % abs(longs[-1])) + 180 % abs(longs[0])) / 2)# Longitude of the center
+    center_lat = 90 % (((90 % abs(lats[-1])) + 90 % abs(lats[0])) / 2)  # Latitude of the center
+
+    center_lon = center_lon if center_lon <= 180 else -1 * (center_lon - 180)
+    center_lat = center_lat if center_lat >= 0 else -1 * (center_lat - 90)
+
+    if ((longs[1] - longs[0]) >= 0) and ((longs[2] - longs[1]) >= 0):       #if the route is going to the west
+        llcornerlon = center_lon - (center_lon - longs[-1]) - 10 
+        llcornerlat = center_lat - (center_lat - lats[-1]) - 10
+        urcornerlon = center_lon + (longs[0] - center_lon) + 10
+        urcornerlat = center_lat + (lat_max - center_lat) + 10
+    else:                                                                   #if the route is going to the east
+        llcornerlon = center_lon - (center_lon - longs[0]) - 10
+        llcornerlat = center_lat - (center_lat - lats[0]) - 10
+        urcornerlon = center_lon + (longs[-1] - center_lon) + 10
+        urcornerlat = center_lat + (lat_max - center_lat) + 10
+
+    m = Basemap(projection='cyl',  resolution='i',
+            llcrnrlon=llcornerlon, llcrnrlat=llcornerlat,
+            urcrnrlon=urcornerlon, urcrnrlat=urcornerlat,)    
 
     lons, latts = m(longs, lats)
-    m.scatter(lons, latts, marker = 'o', color='r', zorder=5)
+    #m.scatter(lons, latts, marker = 'o', color='r', zorder=5)
+    m.plot(lons, latts, 'o-', markersize=5, linewidth=2) 
+    for i in range(0, len(longs)):
+        plt.text(longs[i], lats[i], names[i], fontsize=10)
+
     # draw a shaded-relief image
     m.shadedrelief(scale=0.2)
     
@@ -298,7 +322,7 @@ def main():
         else:
             sys.exit("Invalid File")
     else:
-        Route = readPmdg(open("777plans/KMIA-RKSI.rte", "r"))
+        Route = readAerosoft(open("aerosoftplans/MPTOSCEL.flp", "r"))
         plotRoute(Route)
 
 #process command line arguments 
