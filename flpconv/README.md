@@ -18,5 +18,10 @@
      Currently only works on Windows and Linux OS. For other OS clone this Repo and add 
      Python call for your machine in conv.sh.
 
+## Get local copy
+
+ Just clone this repo to a local folder on your machine:
+ 
+ <code>git clone https://github.com/CmdIglo/cli-lib/tree/main/flpconv [storage location] </code>
 
 :copyright: Maxwell Leu 2023
