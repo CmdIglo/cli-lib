@@ -1,17 +1,14 @@
 
 import sys
+import re
 from argparse import ArgumentParser
 
 #represents a .flp flight plan
 class RouteFLP():
-    def __init__(self, waypoints, start, end, rwydep, rwyarr, sid, star):
+    def __init__(self, waypoints, start, end):
         self.waypoints = waypoints
         self.start = start
         self.end = end
-        self.rwydep = rwydep
-        self.rwyarr = rwyarr
-        self.sid = sid
-        self.star = star
 
     def getWaypoints(self):
         return self.waypoints
@@ -30,30 +27,6 @@ class RouteFLP():
 
     def setEnd(self, end):
         self.end = end
-
-    def getRwyDep(self):
-        return self.rwydep
-
-    def setRwyDep(self, rwy):
-        self.rwydep = rwy
-
-    def getRwyArr(self):
-        return self.rwyarr
-
-    def setRwyArr(self, rwy):
-        self.rwyarr = rwy
-
-    def getSid(self):
-        return self.sid
-
-    def setSid(self, sid):
-        self.sid = sid
-
-    def getStar(self):
-        return self.star
-
-    def setStar(self, star):
-        self.star = star
 
     def printRte(self, stream):
         if stream == "stdout":
@@ -128,7 +101,7 @@ class RoutepointFLP():
 
 #read the .flp flight plan
 def readAerosoft(flp):
-    aerosoft_flp = RouteFLP([], "", "", "", "", "", "")
+    aerosoft_flp = RouteFLP([], "", "")
     rte = []
     for line in flp:
         if line.startswith("ArptDep="):
@@ -196,13 +169,18 @@ def readPmdg(rte):
 
 #convert from rte to flp
 def convertRF(rte):
-    new_flp = RouteFLP([], "", "", "", "", "", "")
+    new_flp = RouteFLP([], "", "")
     new_flp_rte = []
     new_flp.setStart(rte.getStart())
     new_flp.setEnd(rte.getEnd())
     for wpt in rte.getWaypoints():
-        pass
-    pass
+        waypoint_lis = [x for x in wpt.getCoords().split(" ")]
+        waypoint_lat = waypoint_lis[2] if waypoint_lis[1] == "N" else -1 * float(waypoint_lis[2]) 
+        waypoint_long = waypoint_lis[4] if waypoint_lis[3] == "E" else -1 * float(waypoint_lis[4]) 
+        waypoint_name = wpt.getName()
+        new_flp_rte.append(RoutepointFLP(waypoint_name, str(waypoint_lat)+","+str(waypoint_long)))
+    new_flp.setWaypoints(new_flp_rte)       
+    return new_flp
 
 #convert from flp to rte
 def convertFR(flp):
@@ -230,10 +208,12 @@ def main():
         rte = open(filename, "r")
         if filename.endswith(".rte"):
             Route = readPmdg(rte)
-            Route.printRte(store_loc)
+            Flp_route = convertRF(Route)
+            Flp_route.printRte(store_loc)
         elif filename.endswith(".flp"):
             Route = readAerosoft(rte)
-            Route.printRte(store_loc)
+            Rte_route = convertFR(Route)
+            Rte_route.printRte(store_loc)
         else:
             sys.exit("Invalid File")
     #if script should write to stdout
@@ -242,7 +222,8 @@ def main():
         rte = open(filename, "r")
         if filename.endswith(".rte"):
             Route = readPmdg(rte)
-            Route.printRte(store_loc)
+            Flp_route = convertRF(Route)
+            Flp_route.printRte(store_loc)
         elif filename.endswith(".flp"):
             Route = readAerosoft(rte)
             Rte_route = convertFR(Route)
