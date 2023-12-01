@@ -54,6 +54,13 @@ class RouteFLP():
     def setStar(self, star):
         self.star = star
 
+    def printRte(self, stream):
+        if stream == "stdout":
+            for wpt in self.waypoints:
+                print("Waypoint:" + wpt.getName() + "At:" + wpt.getCoords())
+        else:
+            pass
+
 #represents a .rte flight plan
 class RouteRTE():
     def __init__(self, waypoints, start, end):
@@ -78,6 +85,14 @@ class RouteRTE():
 
     def setEnd(self, end):
         self.end = end
+
+    def printRte(self, stream):
+        if stream == "stdout":
+            for wpt in self.waypoints:
+                print("Waypoint:" + wpt.getName() + "At:" + wpt.getCoords())
+        else:
+            pass
+
 
 #represents waypoint in .rte route
 class RoutepointRTE():
@@ -136,31 +151,86 @@ def readAerosoft(flp):
 #read the .rte flight plan
 def readPmdg(rte):
     pmdg_rte = RouteRTE([], "", "")
-    rte = []
+    _rte = []
+    i = 0
+    j = 0
+    newblock = False
     for line in rte:
-        pass
+        if i == 4:
+            pmdg_rte.setStart(line)
+        elif i > 4:
+            if line == "\n":
+                newblock = True
+                j = 0
+            if newblock or j != 0:
+                newblock = False
+                if j == 1:
+                    _rte.append(line)
+                    j += 1
+                if j == 5:
+                    coords = ""
+                    for k in range(0, len(line)):
+                        if k == 0:
+                            continue
+                        elif k < len(line)-3:
+                            coords += line[k]
+                    _rte.append(coords)
+                    j += 1
+                else:
+                    j += 1
+        i += 1
+
+    pmdg_rte.setEnd(_rte[-2])
+
+    final_rte = []
+    x = 2
+    while x < len(_rte) - 2:
+        waypoint = RoutepointRTE(_rte[x], "DIRECT", _rte[x+1])
+        final_rte.append(waypoint)
+        x += 2
+
+    pmdg_rte.setWaypoints(final_rte)
+
+    return pmdg_rte
 
 #convert from rte to flp
-def convertRF(rte, flp):
+def convertRF(rte):
+    new_flp = RouteFLP([], "", "", "", "", "", "")
+    new_flp_rte = []
+    new_flp.setStart(rte.getStart())
+    new_flp.setEnd(rte.getEnd())
+    for wpt in rte.getWaypoints():
+        pass
     pass
 
 #convert from flp to rte
-def convertFR(flp, rte):
-    pass
+def convertFR(flp):
+    new_rte = RouteRTE([], "", "")
+    new_rte_rte = []
+    new_rte.setStart(flp.getStart())
+    new_rte.setEnd(flp.getEnd())
+    for wpt in flp.getWaypoints():
+        waypoint = RoutepointRTE(wpt.getName(), "DIRECT", wpt.getCoords().replace(",", " ", 1))
+        new_rte_rte.append(waypoint)
+    return new_rte
 
 #get flight plan
 def getInput():
     file_name = input("File Name: ")
+    store_loc = input("Store in: ")
     route = open(file_name, "r")
-    return (file_name, route)
+    return (file_name, route, store_loc)
 
 #main function
 def main():
-    filename, rte = getInput()
+    filename, rte, store_loc = getInput()
+    store_loc = "stdout"
     if filename.endswith(".rte"):
-        readPmdg(rte)
+        Route = readPmdg(rte)
+        Route.printRte(store_loc)
     elif filename.endswith(".flp"):
-        readAerosoft(rte)
+        Route = readAerosoft(rte)
+        Route.printRte(store_loc)
     else:
         sys.exit("Invalid File")
 
