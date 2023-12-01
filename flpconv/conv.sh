@@ -38,14 +38,36 @@ while [[ $# -gt 0 ]]; do
             shift
             file2=$1
             shift
-            python3 main.py -f "$file1" "$file2"
+            case "$OSTYPE" in
+                linux*) 
+                    python3 main.py -f "$file1" "$file2"
+                    ;; 
+                msys*) 
+                    python main.py -f "$file1" "$file2"
+                    ;;
+                *) 
+                    echo "Error: Unknown OS."
+                    display_help
+                    ;;
+            esac
             exit 0
             ;;
         -o)
             shift
             inputFile=$1
             shift
-            python3 main.py -o "$inputFile"
+            case "$OSTYPE" in
+                linux*) 
+                    python3 main.py -o "$inputFile"
+                    ;; 
+                msys*) 
+                    python main.py -o "$inputFile"
+                    ;;
+                *) 
+                    echo "Error: Unknown OS."
+                    display_help
+                    ;;
+            esac
             exit 0
             ;;
         *)
