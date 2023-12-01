@@ -3,6 +3,46 @@ import os
 import sys
 import re
 from argparse import ArgumentParser
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.basemap import Basemap
+from itertools import chain
+
+def plotRoute(rte):
+    lats = []
+    longs = []
+    #check if rte or flp
+    if "," in rte.getWaypoints()[0].getCoords():
+        for wpt in rte.getWaypoints():
+            lats.append(float(wpt.getCoords().split(",")[0]))
+            longs.append(float(wpt.getCoords().split(",")[1]))
+    else:
+        for wpt in rte.getWaypoints():
+            coords = wpt.getCoords().split(" ")
+            lat = coords[2] if coords[1] == "N" else -1*float(coords[2])
+            lon = coords[4] if coords[3] == "E" else -1*float(coords[4])
+            lats.append(float(lat))
+            longs.append(float(lon))
+
+    lat_min = min(lats)
+    lat_max = max(lats)
+    lon_min = min(longs)
+    lon_max = max(longs)
+
+    plt.figure(figsize=(8, 8))
+    
+    m = Basemap(projection='cyl',  resolution=None,
+            llcrnrlat=-90, urcrnrlat=90,
+            llcrnrlon=-180, urcrnrlon=180,)    
+
+    lons, latts = m(longs, lats)
+    m.scatter(lons, latts, marker = 'o', color='r', zorder=5)
+    # draw a shaded-relief image
+    m.shadedrelief(scale=0.2)
+    
+    plt.show()
+    #for wpt in rte.getWaypoints():
+        
 
 #represents a .flp flight plan
 class RouteFLP():
@@ -257,6 +297,9 @@ def main():
             Rte_route.printRte(store_loc)
         else:
             sys.exit("Invalid File")
+    else:
+        Route = readPmdg(open("777plans/KMIA-RKSI.rte", "r"))
+        plotRoute(Route)
 
 #process command line arguments 
 def processArgs():
