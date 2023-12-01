@@ -14,8 +14,8 @@
 
  Notice:
 ---------
-     You have to have python installed on your computer for the script to run properly. <br/>
-     Currently only works on Windows and Linux OS. For other OS clone this Repo and add <br/>
+     You have to have python installed on your computer for the script to run properly. 
+     Currently only works on Windows and Linux OS. For other OS clone this Repo and add 
      Python call for your machine in conv.sh.
 
 
