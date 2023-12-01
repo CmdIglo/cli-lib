@@ -217,8 +217,10 @@ def convertFR(flp):
 
 #main function
 def main():
+    #default output is stdout
     store_loc = "stdout"
     args = processArgs()
+    #if script should write to a file
     if args.filenames != None:
         filename = args.filenames[0]
         rte = open(filename, "r")
@@ -227,9 +229,11 @@ def main():
             Route.printRte(store_loc)
         elif filename.endswith(".flp"):
             Route = readAerosoft(rte)
+            Rte_route = convertFR(Route)
             Route.printRte(store_loc)
         else:
             sys.exit("Invalid File")
+    #if script should write to stdout
     elif args.filename != None:
         filename = args.filename
         rte = open(filename, "r")

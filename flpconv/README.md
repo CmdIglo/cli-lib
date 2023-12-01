@@ -15,3 +15,6 @@
  Notice:
 ---------
      You have to have python installed on your computer for the script to run properly
+
+
+:copyright: Maxwell Leu 2023
