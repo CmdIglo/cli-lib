@@ -1,4 +1,5 @@
 
+import os
 import sys
 import re
 from argparse import ArgumentParser
@@ -32,8 +33,26 @@ class RouteFLP():
         if stream == "stdout":
             for wpt in self.waypoints:
                 print("Waypoint:" + wpt.getName() + "At:" + wpt.getCoords())
+        #prints to a file (the file is being moved into the given folder by the bash script)
         else:
-            pass
+            filename = self.start[0:-1] + self.end[0:-1] + ".flp"
+            with open(filename, 'w') as file:
+                file.write('''
+[CoRte]
+ArptDep=''' + self.start[0:-1] + '''
+ArptArr=''' + self.end[0:-1] + '''
+RwyDep=
+RwyArr=
+RwyArrFinal=
+SID=
+STAR=
+APPR_Trans=''')  
+                i = 1
+                for wpt in self.waypoints:
+                    qualifier = "\nDctWpt"+str(i) 
+                    file.write(qualifier+"="+wpt.getName()[0:-1])
+                    file.write(qualifier+"Coordinates="+wpt.getCoords())
+                    i += 1       
 
 #represents a .rte flight plan
 class RouteRTE():
@@ -65,7 +84,9 @@ class RouteRTE():
             for wpt in self.waypoints:
                 print("Waypoint:" + wpt.getName() + "At:" + wpt.getCoords())
         else:
-            pass
+            filename = self.start + "-" + self.end + ".rte"
+            file = open(filename, "x")
+            file.close()
 
 
 #represents waypoint in .rte route
@@ -104,7 +125,9 @@ def readAerosoft(flp):
     aerosoft_flp = RouteFLP([], "", "")
     rte = []
     for line in flp:
-        if line.startswith("ArptDep="):
+        line.replace('\r', "")
+        line.replace('\n', "")
+        if line.startswith("ArptDep="):            
             aerosoft_flp.setStart(line.split("=")[1])
         elif line.startswith("ArptArr="):
             aerosoft_flp.setEnd(line.split("=")[1])
@@ -131,6 +154,8 @@ def readPmdg(rte):
     newblock = False
     for line in rte:
         if i == 4:
+            line.replace('\r', "")
+            line.replace('\n', "")
             pmdg_rte.setStart(line)
         elif i > 4:
             if line == "\n":
@@ -139,6 +164,8 @@ def readPmdg(rte):
             if newblock or j != 0:
                 newblock = False
                 if j == 1:
+                    line.replace("\r", "")
+                    line.replace("\n", "")
                     _rte.append(line)
                     j += 1
                 if j == 5:
@@ -154,11 +181,11 @@ def readPmdg(rte):
                     j += 1
         i += 1
 
-    pmdg_rte.setEnd(_rte[-2])
+    pmdg_rte.setEnd(_rte[-4])
 
     final_rte = []
     x = 2
-    while x < len(_rte) - 2:
+    while x < len(_rte) - 4:
         waypoint = RoutepointRTE(_rte[x], "DIRECT", _rte[x+1])
         final_rte.append(waypoint)
         x += 2
@@ -209,11 +236,11 @@ def main():
         if filename.endswith(".rte"):
             Route = readPmdg(rte)
             Flp_route = convertRF(Route)
-            Flp_route.printRte(store_loc)
+            Flp_route.printRte(args.filenames[1])       #print to given folder
         elif filename.endswith(".flp"):
             Route = readAerosoft(rte)
             Rte_route = convertFR(Route)
-            Rte_route.printRte(store_loc)
+            Rte_route.printRte(args.filenames[1])       #print to given folder
         else:
             sys.exit("Invalid File")
     #if script should write to stdout
@@ -242,4 +269,3 @@ def processArgs():
 #main function call
 if __name__ == "__main__":
     main()
-

@@ -20,6 +20,58 @@ function display_help() {
     exit 1
 }
 
+function move_file() {
+    local file1=$1
+    local file2=$2
+
+    cutfile1=$(echo "$file1" | cut -d'/' -f2)       #trim the file path at the "/"
+
+    flpname=$(echo "$cutfile1" | cut -d'.' -f1)    #get the route name 
+    flpext=$(echo "$cutfile1" | cut -d'.' -f2)     #get the route extension to determine if its pmdg or aerosoft
+    if [[ "$flpext" == "flp" ]]; then               #if input file was .flp file
+        firstarpt="${flpname:0:4}"                  #get the first airport
+        sndarpt="${flpname:4}"                      #get the second airport
+        filename="$firstarpt-$sndarpt.rte"          #the name of the file being created if it was converted from flp to rte
+        if [ ! -d "$file2" ]; then                  #if directory doesnt exist, create it
+            # If it doesn't exist, create it
+            mkdir -p "$file2"
+            #check if the dir was created succesfully
+            if [ $? -eq 0 ]; then
+                echo "Directory created: $file2"
+                mv "$filename" "$file2"
+            else
+                echo "Failed to create directory: $file2"
+                rm -rf "$filename"
+                exit 1
+            fi            
+        else
+            mv "$filename" "$file2"                 #else just move the file to the directory
+        fi
+        exit 0
+    fi
+    
+    #everything that happens above, but for a flp plan that was created from a rte
+    firstarpt=$(echo "$cutfile1" | cut -d'-' -f1)
+    sndarpt=$(echo "$cutfile1" | cut -d'-' -f2 | cut -d'.' -f1)
+    filename="$firstarpt$sndarpt.flp"
+    if [ ! -d "$file2" ]; then
+            # If it doesn't exist, create it
+            mkdir -p "$file2"
+            #check if the dir was created succesfully
+            if [ $? -eq 0 ]; then
+                echo "Directory created: $file2"
+                mv "$filename" "$file2"
+            else
+                echo "Failed to create directory: $file2"
+                rm -rf "$filename"
+                exit 1
+            fi 
+        else
+            mv "$filename" "$file2"
+        fi
+    exit 0
+}
+
 # Check for the number of arguments
 if [ "$#" -eq 0 ]; then
     echo "Error: No options provided"
@@ -41,9 +93,11 @@ while [[ $# -gt 0 ]]; do
             case "$OSTYPE" in
                 linux*) 
                     python3 main.py -f "$file1" "$file2"
+                    move_file "$file1" "$file2"
                     ;; 
                 msys*) 
                     python main.py -f "$file1" "$file2"
+                    move_file "$file1" "$file2"
                     ;;
                 *) 
                     echo "Error: Unknown OS."
