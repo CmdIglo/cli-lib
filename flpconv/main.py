@@ -211,8 +211,12 @@ def convertFR(flp):
     new_rte.setStart(flp.getStart())
     new_rte.setEnd(flp.getEnd())
     for wpt in flp.getWaypoints():
-        waypoint = RoutepointRTE(wpt.getName(), "DIRECT", wpt.getCoords().replace(",", " ", 1))
-        new_rte_rte.append(waypoint)
+        waypoint_co = wpt.getCoords().split(",")
+        waypoint_name = wpt.getName()
+        waypoint_long = "E " + waypoint_co[1] if float(waypoint_co[1]) > 0 else "W " + waypoint_co[1]  
+        waypoint_lat = "N " + waypoint_co[0] if float(waypoint_co[0]) > 0 else "S " + waypoint_co[0]
+        new_rte_rte.append(RoutepointRTE(waypoint_name, "DIRECT", waypoint_lat + " " + waypoint_long))
+    new_rte.setWaypoints(new_rte_rte)
     return new_rte
 
 #main function
@@ -229,7 +233,6 @@ def main():
             Route.printRte(store_loc)
         elif filename.endswith(".flp"):
             Route = readAerosoft(rte)
-            Rte_route = convertFR(Route)
             Route.printRte(store_loc)
         else:
             sys.exit("Invalid File")
@@ -242,7 +245,8 @@ def main():
             Route.printRte(store_loc)
         elif filename.endswith(".flp"):
             Route = readAerosoft(rte)
-            Route.printRte(store_loc)
+            Rte_route = convertFR(Route)
+            Rte_route.printRte(store_loc)
         else:
             sys.exit("Invalid File")
 
