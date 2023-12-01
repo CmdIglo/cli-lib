@@ -2,8 +2,7 @@
 
 ## Functionality
 
------------------------------------------------------------------ 
- Converter for .flp (aerosoft) and .rte (pmdg) Flightplan files. 
+ Converter for .flp (aerosoft) and .rte (pmdg) Flightplan files. <br/> 
  Converts from .flp <-> .rte
 
  Usage: $0 [-h] [-f inputFile outputFile] [-o inputFile]
