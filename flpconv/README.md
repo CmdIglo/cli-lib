@@ -2,13 +2,18 @@
 
 ## Functionality
 
-Converter CLI for Microsoft Flight Simulator X flightplans.
-Converts .flp (Aerosoft Airbus X Extended) flightplans to .rte (PMDG Boeing fam) flightplans and back.
+----------------------------------------------------------------- 
+ Converter for .flp (aerosoft) and .rte (pmdg) Flightplan files. 
+ Converts from .flp <-> .rte
+-----------------------------------------------------------------
 
-## Help
+ Usage: $0 [-h] [-f inputFile outputFile] [-o inputFile]
 
-Command line interface that converts .flp <-> .rte files
+     -h, --help         Display this help message
+     -f                 Specify input file name and print Route to provided file
+     -o                 Specify input file name and print Route to stdout
 
-Usage:
 
-   main [-h | --help] <Filename>
+ Notice:
+---------
+     You have to have python installed on your computer for the script to run properly

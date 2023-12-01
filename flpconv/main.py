@@ -1,5 +1,6 @@
 
 import sys
+from argparse import ArgumentParser
 
 #represents a .flp flight plan
 class RouteFLP():
@@ -214,25 +215,40 @@ def convertFR(flp):
         new_rte_rte.append(waypoint)
     return new_rte
 
-#get flight plan
-def getInput():
-    file_name = input("File Name: ")
-    store_loc = input("Store in: ")
-    route = open(file_name, "r")
-    return (file_name, route, store_loc)
-
 #main function
 def main():
-    filename, rte, store_loc = getInput()
     store_loc = "stdout"
-    if filename.endswith(".rte"):
-        Route = readPmdg(rte)
-        Route.printRte(store_loc)
-    elif filename.endswith(".flp"):
-        Route = readAerosoft(rte)
-        Route.printRte(store_loc)
-    else:
-        sys.exit("Invalid File")
+    args = processArgs()
+    if args.filenames != None:
+        filename = args.filenames[0]
+        rte = open(filename, "r")
+        if filename.endswith(".rte"):
+            Route = readPmdg(rte)
+            Route.printRte(store_loc)
+        elif filename.endswith(".flp"):
+            Route = readAerosoft(rte)
+            Route.printRte(store_loc)
+        else:
+            sys.exit("Invalid File")
+    elif args.filename != None:
+        filename = args.filename
+        rte = open(filename, "r")
+        if filename.endswith(".rte"):
+            Route = readPmdg(rte)
+            Route.printRte(store_loc)
+        elif filename.endswith(".flp"):
+            Route = readAerosoft(rte)
+            Route.printRte(store_loc)
+        else:
+            sys.exit("Invalid File")
+
+#process command line arguments 
+def processArgs():
+    parser = ArgumentParser()
+    parser.add_argument("-f", nargs=2, dest="filenames",metavar="FILES")
+    parser.add_argument("-o", dest="filename")
+    args = parser.parse_args()
+    return args
 
 #main function call
 if __name__ == "__main__":
