@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 from itertools import chain
+from PIL import Image
 
 def plotRoute(rte):
     lats = []
@@ -27,29 +28,41 @@ def plotRoute(rte):
             lats.append(float(lat))
             longs.append(float(lon))
 
-    lat_min = min(lats)
-    lat_max = max(lats)
-    lon_min = min(longs)
-    lon_max = max(longs)
+    scaled_lons = []
+    for lon in longs:
+        if lon < 0:
+            scaled_lons.append(lon%180)
+        else:
+            scaled_lons.append(lon+180)
+
+    scaled_lats = []
+    for lat in lats:
+        if lat < 0:
+            scaled_lats.append(lat%90)
+        else:
+            scaled_lats.append(lat+90)
+
+    lat_min = min(scaled_lats)-5
+    lat_max = max(scaled_lats)+5
+    lon_min = min(scaled_lons)-5
+    lon_max = max(scaled_lons)+5
+
+    lat_min = lat_min % 180 
+    lat_max = lat_max % 180
+    lon_min = lon_min % 360
+    lon_max = lon_max % 360
+
+    lat_min = (lat_min - 90) if lat_min >= 90 else (-1 * (90 - lat_min)) 
+    lat_max = (lat_max - 90) if lat_max >= 90 else (-1 * (90 - lat_max))
+    lon_min = (lon_min - 180) if lon_min >= 180 else (-1 * (180 - lon_min))
+    lon_max = (lon_max - 180) if lon_max >= 180 else (-1 * (180 - lon_max))   
 
     plt.figure(figsize=(8, 8))
     
-    center_lon = 180 % (((180 % abs(longs[-1])) + 180 % abs(longs[0])) / 2)# Longitude of the center
-    center_lat = 90 % (((90 % abs(lats[-1])) + 90 % abs(lats[0])) / 2)  # Latitude of the center
-
-    center_lon = center_lon if center_lon <= 180 else -1 * (center_lon - 180)
-    center_lat = center_lat if center_lat >= 0 else -1 * (center_lat - 90)
-
-    if ((longs[1] - longs[0]) >= 0) and ((longs[2] - longs[1]) >= 0):       #if the route is going to the west
-        llcornerlon = center_lon - (center_lon - longs[-1]) - 10 
-        llcornerlat = center_lat - (center_lat - lats[-1]) - 10
-        urcornerlon = center_lon + (longs[0] - center_lon) + 10
-        urcornerlat = center_lat + (lat_max - center_lat) + 10
-    else:                                                                   #if the route is going to the east
-        llcornerlon = center_lon - (center_lon - longs[0]) - 10
-        llcornerlat = center_lat - (center_lat - lats[0]) - 10
-        urcornerlon = center_lon + (longs[-1] - center_lon) + 10
-        urcornerlat = center_lat + (lat_max - center_lat) + 10
+    llcornerlon = lon_min
+    llcornerlat = lat_min
+    urcornerlon = lon_max
+    urcornerlat = lat_max
 
     m = Basemap(projection='cyl',  resolution='i',
             llcrnrlon=llcornerlon, llcrnrlat=llcornerlat,
@@ -63,12 +76,27 @@ def plotRoute(rte):
     m.drawcoastlines()   
     filename = rte.getStart()[0:-1] + rte.getEnd()[0:-1] + ".png" 
     m.plot(lons, latts, '-', markersize=5, linewidth=2) 
-    plt.savefig(filename)
+    plt.savefig(filename, bbox_inches='tight')
     m.plot(lons, latts, 'o-', markersize=5, linewidth=2) 
     for i in range(0, len(longs)):
         plt.text(longs[i], lats[i], names[i], fontsize=10)
-    plt.show()
+    #plt.show()
     #TODO make the ascii image for output on cmd
+    img = Image.open(filename)
+    width, height = img.size
+    aspect_ratio = height/width
+    new_width = 60
+    new_height = aspect_ratio * new_width * 0.55
+    img = img.resize((new_width, int(new_height)))
+    img = img.convert('L')
+    pixels = img.getdata()
+    chars = ["-","/","_","@","$","%","*","|",":",".","\\", "l", "<", ">", "#", "§", "(", "´", "~"]
+    new_pixels = [chars[pixel//14] for pixel in pixels]
+    new_pixels = ''.join(new_pixels)
+    new_pixels_count = len(new_pixels)
+    ascii_image = [new_pixels[index:index + new_width] for index in range(0, new_pixels_count, new_width)]
+    ascii_image = "\n".join(ascii_image)
+    print(ascii_image)
     #for wpt in rte.getWaypoints():
         
 
@@ -326,7 +354,7 @@ def main():
         else:
             sys.exit("Invalid File")
     else:
-        Route = readPmdg(open("737plans/RKSI-VHHH.rte", "r"))
+        Route = readAerosoft(open("aerosoftplans/MPTOSCEL.flp", "r"))
         plotRoute(Route)
 
 #process command line arguments 
