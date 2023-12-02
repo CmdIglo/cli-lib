@@ -97,8 +97,6 @@ def plotRoute(rte):
     ascii_image = [new_pixels[index:index + new_width] for index in range(0, new_pixels_count, new_width)]
     ascii_image = "\n".join(ascii_image)
     print(ascii_image)
-    #for wpt in rte.getWaypoints():
-        
 
 #represents a .flp flight plan
 class RouteFLP():
@@ -175,6 +173,7 @@ class RouteRTE():
     def setEnd(self, end):
         self.end = end
 
+#TODO complete print rte function 
     def printRte(self, stream):
         if stream == "stdout":
             for wpt in self.waypoints:
@@ -347,15 +346,14 @@ def main():
             Route = readPmdg(rte)
             Flp_route = convertRF(Route)
             Flp_route.printRte(store_loc)
+            plotRoute(Route)
         elif filename.endswith(".flp"):
             Route = readAerosoft(rte)
             Rte_route = convertFR(Route)
             Rte_route.printRte(store_loc)
+            plotRoute(Route)
         else:
             sys.exit("Invalid File")
-    else:
-        Route = readAerosoft(open("aerosoftplans/MPTOSCEL.flp", "r"))
-        plotRoute(Route)
 
 #process command line arguments 
 def processArgs():

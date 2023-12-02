@@ -11,7 +11,7 @@ function display_help() {
     echo ""
     echo "      -h, --help         Display this help message"
     echo "      -f                 Specify input file name and print Route to provided folder"
-    echo "      -o                 Specify input file name and print Route to stdout"
+    echo "      -o                 Specify input file name and print route map and route to stdout"
     echo ""
     echo ""
     echo "  Notice:"
@@ -92,10 +92,16 @@ while [[ $# -gt 0 ]]; do
             shift
             case "$OSTYPE" in
                 linux*) 
+                    pip3 install numpy
+                    pip3 install matplotlib
+                    pip3 install Pillow
                     python3 main.py -f "$file1" "$file2"
                     move_file "$file1" "$file2"
                     ;; 
                 msys*) 
+                    pip install numpy
+                    pip install matplotlib
+                    pip install Pillow
                     python main.py -f "$file1" "$file2"
                     move_file "$file1" "$file2"
                     ;;
