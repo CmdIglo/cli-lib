@@ -56,15 +56,19 @@ def plotRoute(rte):
             urcrnrlon=urcornerlon, urcrnrlat=urcornerlat,)    
 
     lons, latts = m(longs, lats)
-    #m.scatter(lons, latts, marker = 'o', color='r', zorder=5)
+
+    # draw a shaded-relief image
+    # m.shadedrelief(scale=0.2)
+    m.fillcontinents(color='0.8', lake_color=None, ax=None, zorder=None, alpha=None)
+    m.drawcoastlines()   
+    filename = rte.getStart()[0:-1] + rte.getEnd()[0:-1] + ".png" 
+    m.plot(lons, latts, '-', markersize=5, linewidth=2) 
+    plt.savefig(filename)
     m.plot(lons, latts, 'o-', markersize=5, linewidth=2) 
     for i in range(0, len(longs)):
         plt.text(longs[i], lats[i], names[i], fontsize=10)
-
-    # draw a shaded-relief image
-    m.shadedrelief(scale=0.2)
-    
     plt.show()
+    #TODO make the ascii image for output on cmd
     #for wpt in rte.getWaypoints():
         
 
@@ -322,7 +326,7 @@ def main():
         else:
             sys.exit("Invalid File")
     else:
-        Route = readAerosoft(open("aerosoftplans/MPTOSCEL.flp", "r"))
+        Route = readPmdg(open("737plans/RKSI-VHHH.rte", "r"))
         plotRoute(Route)
 
 #process command line arguments 
