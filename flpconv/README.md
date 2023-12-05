@@ -22,7 +22,7 @@
  
  This is how a example cli call for the "-o" flag looks like:
  
- <code>./conv.sh -o aerosoftplans/WSSSRCTP.flp</code>
+ <code>./conv.sh -o aerosoftplans/WSSSRCTP.flp</code><br/>
  Waypoint:TOMAN
  At:N 1.363100 E 105.788100
 
