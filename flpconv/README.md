@@ -3,7 +3,7 @@
 ## Functionality
 
  Converter for .flp (aerosoft) and .rte (pmdg) Flightplan files. <br/> 
- Converts from .flp <-> .rte
+ Converts from .flp :left_right_arrow: .rte
 
  <code>Usage: conv.sh [-h] [-f inputFile outputFolder] [-o inputFile]</code>
 
