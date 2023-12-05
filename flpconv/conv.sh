@@ -20,6 +20,7 @@ function display_help() {
     exit 1
 }
 
+# Function that moves the flightplan file to the given folder
 function move_file() {
     local file1=$1
     local file2=$2
@@ -72,6 +73,7 @@ function move_file() {
     exit 0
 }
 
+# Installs the dependencies on Linux machines
 function installDepsLinux() {
     pip3 install numpy
     pip3 install matplotlib
@@ -81,10 +83,12 @@ function installDepsLinux() {
     pip3 install basemap --user
 }
 
+# Installs the dependencies on Windows machines
 function installDepsWin() {
     pip install numpy
     pip install matplotlib
     pip install Pillow
+    # Fetch the build wheel from the lib folder 
     for FILE in lib/basemap*; do
         if [[ -f $FILE ]]; then
             pip install $FILE
