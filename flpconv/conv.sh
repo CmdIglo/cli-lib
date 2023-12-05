@@ -72,6 +72,26 @@ function move_file() {
     exit 0
 }
 
+function installDepsLinux() {
+    pip3 install numpy
+    pip3 install matplotlib
+    pip3 install Pillow
+    sudo apt update
+    sudo apt install libgeos-dev libproj-dev
+    pip3 install basemap --user
+}
+
+function installDepsWin() {
+    pip install numpy
+    pip install matplotlib
+    pip install Pillow
+    for FILE in lib/basemap*; do
+        if [[ -f $FILE ]]; then
+            pip install $FILE
+        fi
+    done
+}
+
 # Check for the number of arguments
 if [ "$#" -eq 0 ]; then
     echo "Error: No options provided"
@@ -92,16 +112,12 @@ while [[ $# -gt 0 ]]; do
             shift
             case "$OSTYPE" in
                 linux*) 
-                    pip3 install numpy
-                    pip3 install matplotlib
-                    pip3 install Pillow
+                    installDepsLinux                    
                     python3 main.py -f "$file1" "$file2"
                     move_file "$file1" "$file2"
                     ;; 
                 msys*) 
-                    pip install numpy
-                    pip install matplotlib
-                    pip install Pillow
+                    installDepsWin                    
                     python main.py -f "$file1" "$file2"
                     move_file "$file1" "$file2"
                     ;;
@@ -118,9 +134,11 @@ while [[ $# -gt 0 ]]; do
             shift
             case "$OSTYPE" in
                 linux*) 
+                    installDepsLinux
                     python3 main.py -o "$inputFile"
                     ;; 
                 msys*) 
+                    installDepsWin
                     python main.py -o "$inputFile"
                     ;;
                 *) 
