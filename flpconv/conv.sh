@@ -7,11 +7,12 @@ function display_help() {
     echo "  Converts from .flp <-> .rte"
     echo " -----------------------------------------------------------------"
     echo ""
-    echo "  Usage: $0 [-h] [-f inputFile outputFolder] [-o inputFile]"
+    echo "  Usage: $0 [-h] [-f inputFile outputFolder] [-o inputFile [-s|--save]]"
     echo ""
     echo "      -h, --help         Display this help message"
     echo "      -f                 Specify input file name and print Route to provided folder"
     echo "      -o                 Specify input file name and print route map and route to stdout"
+    echo "      -s, --save         Specify if the route map should be saved as .png (Yes if set else no)"
     echo ""
     echo ""
     echo "  Notice:"
@@ -78,6 +79,7 @@ function installDepsLinux() {
     pip3 install numpy
     pip3 install matplotlib
     pip3 install Pillow
+    pip3 install argparse
     sudo apt update
     sudo apt install libgeos-dev libproj-dev
     pip3 install basemap --user
@@ -88,6 +90,7 @@ function installDepsWin() {
     pip install numpy
     pip install matplotlib
     pip install Pillow
+    pip install argparse
     # Fetch the build wheel from the lib folder 
     for FILE in lib/basemap*; do
         if [[ -f $FILE ]]; then
@@ -136,14 +139,37 @@ while [[ $# -gt 0 ]]; do
             shift
             inputFile=$1
             shift
+            saveFlag=false
             case "$OSTYPE" in
                 linux*) 
                     installDepsLinux
-                    python3 main.py -o "$inputFile"
+                    while [[ $# -gt 0 ]]; do
+                        case $1 in
+                            -s|--save)
+                                saveFlag=true
+                                shift
+                                ;;
+                            *)
+                                break
+                                ;;
+                        esac
+                    done
+                    python3 main.py -o "$inputFile"  "$([ "$saveFlag" = true ] && echo '-s True' || echo '-s False')" 
                     ;; 
                 msys*) 
                     installDepsWin
-                    python main.py -o "$inputFile"
+                    while [[ $# -gt 0 ]]; do
+                        case $1 in
+                            -s|--save)
+                                saveFlag=true
+                                shift
+                                ;;
+                            *)
+                                break
+                                ;;
+                        esac
+                    done
+                    python main.py -o "$inputFile" "$([ "$saveFlag" = true ] && echo '-s True' || echo '-s False')"
                     ;;
                 *) 
                     echo "Error: Unknown OS."

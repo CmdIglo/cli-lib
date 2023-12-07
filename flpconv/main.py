@@ -9,7 +9,7 @@ from mpl_toolkits.basemap import Basemap
 from itertools import chain
 from PIL import Image
 
-def plotRoute(rte):
+def plotRoute(rte, save):
     lats = []
     longs = []
     names = []
@@ -92,6 +92,11 @@ def plotRoute(rte):
     ascii_image = [new_pixels[index:index + new_width] for index in range(0, new_pixels_count, new_width)]
     ascii_image = "\n".join(ascii_image)
     print(ascii_image)
+    # delete plot if not wanted (if -s flag wasnt set)
+    if not save:
+        wd = os.getcwd()
+        file_name = wd+"/"+filename
+        os.remove(file_name)
 
 #represents a .flp flight plan
 class RouteFLP():
@@ -374,16 +379,17 @@ def main():
     elif args.filename != None:
         filename = args.filename
         rte = open(filename, "r")
+        store = True if args.save.strip() == "True" else False
         if filename.endswith(".rte"):
             Route = readPmdg(rte)
             Flp_route = convertRF(Route)
             Flp_route.printRte(store_loc)
-            plotRoute(Route)
+            plotRoute(Route, store)
         elif filename.endswith(".flp"):
             Route = readAerosoft(rte)
             Rte_route = convertFR(Route)
             Rte_route.printRte(store_loc)
-            plotRoute(Route)
+            plotRoute(Route, store)
         else:
             sys.exit("Invalid File")
 
@@ -392,6 +398,7 @@ def processArgs():
     parser = ArgumentParser()
     parser.add_argument("-f", nargs=2, dest="filenames",metavar="FILES")
     parser.add_argument("-o", dest="filename")
+    parser.add_argument('-s', dest="save")
     args = parser.parse_args()
     return args
 
